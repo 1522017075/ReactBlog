@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 
 import './login.less'
 import logo from './images/logo.jpeg'
-import { Form, Icon, Input, Button } from 'antd';
+import {Form, Icon, Input, Button, message} from 'antd';
 import {reqLogin} from "../../api";
-
+import memoryUtils from "../../utils/memoryUtils";
 const Item = Form.Item; // 不能写在Import之前
 /*
     登陆的路由组件
@@ -15,15 +15,22 @@ class Login extends Component {
         // 阻止事件的默认行为
         e.preventDefault();
         // 校验所有表单字段
-        this.props.form.validateFields((err, values) => {
+        this.props.form.validateFields(async (err, values) => {
             if (!err) {
                 console.log('发送请求: ', values);
                 const {account} = values;
-                reqLogin(account).then(response => {
-                    console.log('成了', response.data)
-                }).catch(error => {
-                    console.log('没成', error.data)
-                })
+                const result = await reqLogin(account);
+                if (result.status === true) {
+                    // 提示登陆成功
+                    message.success("好兄弟你来啦")
+                    // 跳转首页(不需要回退到登陆, 否则用push)
+                    memoryUtils.user = result.data
+                    this.props.history.replace('/home')
+                } else {
+                    message.error("没你的号子, 真的")
+                }
+            } else {
+                console.log("没这人")
             }
         });
     };
@@ -88,3 +95,12 @@ class Login extends Component {
 
 const WrapLogin = Form.create()(Login)
 export default WrapLogin
+
+/*
+    async 和 await
+    1.作用
+        简化promise对象的使用: 不再使用.then()来指定成功/失败
+
+    2.await在[请求]左边写: 不想要promise, 想要promise异步执行成功的value数据
+    3.async写在[await所在函数的左侧]
+ */
