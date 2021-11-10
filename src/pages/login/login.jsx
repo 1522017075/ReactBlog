@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 
 import './login.less'
-import logo from './images/logo.jpeg'
+import logo from '../../assets/images/logo.jpeg'
 import {Form, Icon, Input, Button, message} from 'antd';
 import {reqLogin} from "../../api";
 import memoryUtils from "../../utils/memoryUtils";
+import storageUtils from "../../utils/storageUtils";
+import {Redirect} from "react-router-dom";
 const Item = Form.Item; // 不能写在Import之前
 /*
     登陆的路由组件
@@ -24,7 +26,9 @@ class Login extends Component {
                     // 提示登陆成功
                     message.success("好兄弟你来啦")
                     // 跳转首页(不需要回退到登陆, 否则用push)
-                    memoryUtils.user = result.data
+                    const user = result.data
+                    memoryUtils.user = user
+                    storageUtils.saveUser(user)
                     this.props.history.replace('/home')
                 } else {
                     message.error("没你的号子, 真的")
@@ -37,6 +41,12 @@ class Login extends Component {
     
     render () {
 
+        // 如果用户已经登录, 自动跳转
+        const user = memoryUtils.user
+        if (!user && !user.id) {
+            return <Redirect to='/home'></Redirect>
+        }
+
         // 得到具有强大功能的form对象
         const form = this.props.form
         const { getFieldDecorator } = form;
@@ -48,7 +58,7 @@ class Login extends Component {
                     <h1>好兄弟你来啦~</h1>
                 </header>
                 <section className="login-content">
-                    <h2>用户登陆</h2>
+                    <h2>好兄弟登陆</h2>
                         <Form onSubmit={this.handleSubmit} className="login-form">
                             <Item>
                                 {getFieldDecorator('account', {
@@ -63,12 +73,13 @@ class Login extends Component {
                                     <Input
                                         prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
                                         placeholder="号子写这"
+                                        style={{height: '46px'}}
                                     />,
                                 )}
                             </Item>
                             <Form.Item>
                                 <Button type="primary" htmlType="submit" className="login-form-button">
-                                    点这
+                                    点!!!
                                 </Button>
                             </Form.Item>
                         </Form>

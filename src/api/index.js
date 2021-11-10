@@ -3,9 +3,9 @@
  */
 import ajax from "./ajax";
 
-const BASE = 'http://ziyanglikezy.xyz:9000'
+// const BASE = 'http://ziyanglikezy.xyz:9000'
 // const BASE = 'http://localhost:9000'
-// const BASE = ''
+const BASE = ''
 // export default reqLogin() {
 //     ajax('/login', {username}, 'POST')
 // }
