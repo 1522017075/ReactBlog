@@ -1,9 +1,12 @@
 import React, {Component} from 'react';
 import memoryUtils from "../../utils/memoryUtils";
-import {Redirect} from "react-router-dom";
-import { Layout } from 'antd';
+import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
+import {Layout} from 'antd';
 import LeftNav from "../../components/left-nav";
 import Header from "../../components/header";
+
+import AutoUp from "../play/auto-up";
+import UserInfo from "../user/user-info";
 
 const { Footer, Sider, Content } = Layout;
 /*
@@ -19,16 +22,25 @@ export default class Home extends Component {
             return <Redirect to='/login'/>
         }
         return(
-            <Layout style={{height: '100%'}}>
-                <Sider>
-                    <LeftNav></LeftNav>
-                </Sider>
-                <Layout>
-                    <Header>Header</Header>
-                    <Content style={{backgroundColor: 'white'}}>Content</Content>
-                    <Footer style={{textAlign: "center"}}>生活不易, 玥宝叹气</Footer>
+            // #ffb6b9 #fae3d9 #bbded6 #8ac6d1
+            <BrowserRouter>
+                <Layout style={{height: '100%'}}>
+                    <Sider style={{backgroundColor: "#fae3d9"}}>
+                        <LeftNav></LeftNav>
+                    </Sider>
+                    <Layout>
+                        <Header>Header</Header>
+                        <Content style={{backgroundColor: 'white'}}>
+                            <Switch>
+                                <Route path='/auto' component={AutoUp}/>
+                                <Route path='/info' component={UserInfo}/>
+                                <Redirect to={'/auto'}/>
+                            </Switch>
+                        </Content>
+                        <Footer style={{textAlign: "center"}}>生活不易, 玥宝叹气</Footer>
+                    </Layout>
                 </Layout>
-            </Layout>
+            </BrowserRouter>
         )
     }
 }
