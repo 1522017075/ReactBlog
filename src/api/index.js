@@ -11,3 +11,5 @@ const BASE = ''
 // }
 export const reqLogin = (account) => ajax(BASE + '/checkUser', {account}, 'POST')
 export const reqRegister = (account) => ajax(BASE + '/registerUser', {account}, 'POST')
+export const reqCancelAutoUpdate = (user) => ajax(BASE + '/cancelAutoUpdate', user, 'POST')
+export const reqStartAutoUpdate = (user) => ajax(BASE + '/startAutoUpdate', user, 'POST')

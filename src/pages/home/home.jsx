@@ -29,7 +29,7 @@ export default class Home extends Component {
                         <LeftNav></LeftNav>
                     </Sider>
                     <Layout>
-                        <Header>Header</Header>
+                        <Header></Header>
                         <Content style={{backgroundColor: 'white'}}>
                             <Switch>
                                 <Route path='/auto' component={AutoUp}/>
