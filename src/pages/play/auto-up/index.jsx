@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import './index.less'
-import {Form, Switch} from "antd";
+import {Form, Switch, Table} from "antd";
 import memoryUtils from "../../../utils/memoryUtils";
-import {reqCancelAutoUpdate, reqStartAutoUpdate} from "../../../api";
+import {reqCancelAutoUpdate, reqRecord, reqStartAutoUpdate} from "../../../api";
 import storageUtils from "../../../utils/storageUtils";
 
 
@@ -23,8 +23,36 @@ class autoUp extends Component {
         console.log(response)
     }
 
+    getRecordFromId = async () => {
+        const user = memoryUtils.user;
+        let response = await reqRecord(user);
+        return response.data
+    }
+
+
     render() {
         const user = memoryUtils.user;
+
+        // TODO:值永远在promise对象肚子里？
+        let dataSource = [];
+        this.getRecordFromId().then(data => {
+            console.log(data)
+            dataSource = data;
+            console.log(dataSource)
+        })
+
+        const columns = [
+            {
+                title: '日期',
+                dataIndex: 'updateTime',
+                key: 'updateTime',
+            },
+            {
+                title: '上报结果',
+                dataIndex: 'isSuccess',
+                key: 'isSuccess',
+            },
+        ];
 
         return (
             <div>
@@ -37,6 +65,7 @@ class autoUp extends Component {
                             defaultChecked={user.autoUpdate}
                             onClick={this.changeUpdate}/>
                     </span>
+                    <Table dataSource={dataSource} columns={columns} />
                 </div>
             </div>
         )
