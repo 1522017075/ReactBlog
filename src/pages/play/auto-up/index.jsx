@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './index.less'
-import { Switch, Table} from "antd";
+import {Button, Switch, Table, Tag} from "antd";
 import memoryUtils from "../../../utils/memoryUtils";
 import {reqCancelAutoUpdate, reqRecord, reqStartAutoUpdate} from "../../../api";
 import storageUtils from "../../../utils/storageUtils";
@@ -29,10 +29,16 @@ export default class autoUp extends Component {
 
     getRecordFromId = async () => {
         const user = memoryUtils.user;
-        let result = await reqRecord(user);
+        const result = await reqRecord(user);
 
-        if (result.status === 0){
-            const dataSource = result.data
+        if (result.status) {
+            let dataSource = result.data
+            dataSource.sort((a, b) => b.updateTime - a.updateTime)
+            dataSource.forEach(user => {
+                let timestamp4 = new Date(user.updateTime)
+                user.updateTime = timestamp4.toLocaleDateString().replace(/\//g, "-") + " " + timestamp4.toTimeString().substr(0, 8)
+                user.isSuccess = user.isSuccess ? "成功" : "失败"
+            })
             this.setState({
                 dataSource
             })
@@ -55,6 +61,11 @@ export default class autoUp extends Component {
                 title: '上报结果',
                 dataIndex: 'isSuccess',
                 key: 'isSuccess',
+                render: isSuccess => (
+                    <Tag color={isSuccess === "成功" ? "geekblue" : "red"} key="isSuccess">
+                        {isSuccess}
+                    </Tag>
+                )
             },
         ]
     }
@@ -66,13 +77,12 @@ export default class autoUp extends Component {
 
     // 发送Ajax异步请求
     componentDidMount() {
-        this.getRecordFromId()
+        this.getRecordFromId().then(r => console.log(r))
     }
 
 
     render() {
         const user = memoryUtils.user;
-        const {dataSource} = this.state.dataSource
 
         return (
             <div>
@@ -85,7 +95,13 @@ export default class autoUp extends Component {
                             defaultChecked={user.autoUpdate}
                             onClick={this.changeUpdate}/>
                     </span>
-                    <Table dataSource={dataSource} columns={this.columns} />
+                    <br/>
+                    <div className="auto-update-form-button">
+                        <Button  type="danger" icon="redo">
+                            点我手动上报
+                        </Button>
+                    </div>
+                    <Table pagination="false" dataSource={this.state.dataSource} columns={this.columns}/>
                 </div>
             </div>
         )

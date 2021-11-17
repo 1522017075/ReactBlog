@@ -5,7 +5,7 @@ import ajax from "./ajax";
 
 // const BASE = 'http://ziyanglikezy.xyz:9000/api'
 // const BASE = 'http://localhost:9000/api'
-const BASE = '/api'
+const BASE = ''
 // export default reqLogin() {
 //     ajax('/login', {username}, 'POST')
 // }
@@ -14,3 +14,4 @@ export const reqRegister = (account) => ajax(BASE + '/registerUser', {account}, 
 export const reqCancelAutoUpdate = (user) => ajax(BASE + '/cancelAutoUpdate', user, 'POST')
 export const reqStartAutoUpdate = (user) => ajax(BASE + '/startAutoUpdate', user, 'POST')
 export const reqRecord = (user) => ajax(BASE + '/record', user, 'POST')
+export const reqUpdateBySelf = (user) => ajax(BASE + '/updateBySelf', user, 'POST')
