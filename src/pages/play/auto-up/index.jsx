@@ -1,16 +1,17 @@
 import React, {Component} from 'react';
 import './index.less'
-import {Button, Switch, Table, Tag} from "antd";
+import {Button, message, Switch, Table, Tag, Modal} from "antd";
 import memoryUtils from "../../../utils/memoryUtils";
-import {reqCancelAutoUpdate, reqRecord, reqStartAutoUpdate} from "../../../api";
+import {reqCancelAutoUpdate, reqRecord, reqStartAutoUpdate, reqUpdateBySelf} from "../../../api";
 import storageUtils from "../../../utils/storageUtils";
-
+const { confirm } = Modal;
 
 export default class autoUp extends Component {
 
     state = {
         dataSource: [],
     }
+
 
     changeUpdate = () => {
         const user = memoryUtils.user;
@@ -75,9 +76,36 @@ export default class autoUp extends Component {
         this.initColumns()
     }
 
+    updateByOneSelf = async () => {
+        console.log("上报啦")
+        const user = memoryUtils.user;
+        const result = await reqUpdateBySelf(user);
+        if (result.status) {
+            this.getRecordFromId().then()
+            message.info("上报成功!")
+        } else {
+            message.error("上报失败，请联系子扬!")
+        }
+    }
+
+    showConfirm = () => {
+        confirm({
+            title: '确定要手动上报一次嘛??',
+            content: '这样做的后果就是, 会手动上报一次',
+            okText: '冲他',
+            cancelText: '我缓缓再来',
+            onOk :() => {
+                this.updateByOneSelf().then()
+            },
+            onCancel() {
+                console.log('我缓缓再来');
+            },
+        });
+    }
+
     // 发送Ajax异步请求
     componentDidMount() {
-        this.getRecordFromId().then(r => console.log(r))
+        this.getRecordFromId().then()
     }
 
 
@@ -97,7 +125,7 @@ export default class autoUp extends Component {
                     </span>
                     <br/>
                     <div className="auto-update-form-button">
-                        <Button  type="danger" icon="redo">
+                        <Button  type="danger" icon="redo" onClick={this.showConfirm}>
                             点我手动上报
                         </Button>
                     </div>
