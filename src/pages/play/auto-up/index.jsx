@@ -1,12 +1,16 @@
 import React, {Component} from 'react';
 import './index.less'
-import {Form, Switch, Table} from "antd";
+import { Switch, Table} from "antd";
 import memoryUtils from "../../../utils/memoryUtils";
 import {reqCancelAutoUpdate, reqRecord, reqStartAutoUpdate} from "../../../api";
 import storageUtils from "../../../utils/storageUtils";
 
 
-class autoUp extends Component {
+export default class autoUp extends Component {
+
+    state = {
+        dataSource: [],
+    }
 
     changeUpdate = () => {
         const user = memoryUtils.user;
@@ -25,23 +29,23 @@ class autoUp extends Component {
 
     getRecordFromId = async () => {
         const user = memoryUtils.user;
-        let response = await reqRecord(user);
-        return response.data
+        let result = await reqRecord(user);
+
+        if (result.status === 0){
+            const dataSource = result.data
+            this.setState({
+                dataSource
+            })
+        } else {
+            console.log("历史登陆数据查询错误")
+        }
     }
 
-
-    render() {
-        const user = memoryUtils.user;
-
-        // TODO:值永远在promise对象肚子里？
-        let dataSource = [];
-        this.getRecordFromId().then(data => {
-            console.log(data)
-            dataSource = data;
-            console.log(dataSource)
-        })
-
-        const columns = [
+    /*
+        初始化Table所有列的数组
+     */
+    initColumns = () => {
+        this.columns = [
             {
                 title: '日期',
                 dataIndex: 'updateTime',
@@ -52,7 +56,23 @@ class autoUp extends Component {
                 dataIndex: 'isSuccess',
                 key: 'isSuccess',
             },
-        ];
+        ]
+    }
+
+    // 为第一次render准备数据
+    componentWillMount() {
+        this.initColumns()
+    }
+
+    // 发送Ajax异步请求
+    componentDidMount() {
+        this.getRecordFromId()
+    }
+
+
+    render() {
+        const user = memoryUtils.user;
+        const {dataSource} = this.state.dataSource
 
         return (
             <div>
@@ -65,13 +85,9 @@ class autoUp extends Component {
                             defaultChecked={user.autoUpdate}
                             onClick={this.changeUpdate}/>
                     </span>
-                    <Table dataSource={dataSource} columns={columns} />
+                    <Table dataSource={dataSource} columns={this.columns} />
                 </div>
             </div>
         )
     }
 }
-
-
-const WrapAutoUp = Form.create()(autoUp)
-export default WrapAutoUp
